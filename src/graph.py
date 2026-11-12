@@ -4,6 +4,7 @@ def build_graph(repository, root):
     graph = {}
     cycles = []
     path = []
+    order = []
 
     def visit(package):
         if package in path:
@@ -17,6 +18,9 @@ def build_graph(repository, root):
         for dependency in dependencies:
             visit(dependency)
         path.pop()
+        order.append(package)
 
     visit(root)
-    return graph, cycles
+    if cycles:
+        order = []
+    return graph, cycles, order

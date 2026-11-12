@@ -12,11 +12,12 @@ def main():
     try:
         config = read_config(sys.argv[1])
         repository = load_repository(config)
-        graph, cycles = build_graph(repository, config["package"])
-        for package, dependencies in graph.items():
-            print(f"{package}: {' '.join(dependencies)}")
-        for cycle in cycles:
-            print("Цикл: " + " -> ".join(cycle), file=sys.stderr)
+        root = config["package"]
+        _, cycles, order = build_graph(repository, root)
+        if cycles:
+            cycle = " -> ".join(cycles[0])
+            raise ValueError(f"порядок загрузки невозможен, цикл {cycle}")
+        print(" -> ".join(order[:-1]) or "Нет зависимостей")
     except (OSError, ValueError) as error:
         print(f"Ошибка: {error}", file=sys.stderr)
         return 1
