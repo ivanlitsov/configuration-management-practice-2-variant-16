@@ -1,7 +1,8 @@
 import sys
 
-from apk_index import direct_requirements, fetch_index
 from config import read_config
+from graph import build_graph
+from repository import load_repository
 
 
 def main():
@@ -10,11 +11,12 @@ def main():
         return 2
     try:
         config = read_config(sys.argv[1])
-        if config["test_mode"]:
-            raise ValueError("тестовый репозиторий появится на этапе 3")
-        packages = fetch_index(config["repository"])
-        dependencies = direct_requirements(packages, config["package"])
-        print("\n".join(dependencies) if dependencies else "Зависимостей нет")
+        repository = load_repository(config)
+        graph, cycles = build_graph(repository, config["package"])
+        for package, dependencies in graph.items():
+            print(f"{package}: {' '.join(dependencies)}")
+        for cycle in cycles:
+            print("Цикл: " + " -> ".join(cycle), file=sys.stderr)
     except (OSError, ValueError) as error:
         print(f"Ошибка: {error}", file=sys.stderr)
         return 1
