@@ -6,8 +6,11 @@ from repository import load_repository
 from visualize import ascii_tree, show_graph
 
 
+EXPECTED_ARG_COUNT = 2
+
+
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) != EXPECTED_ARG_COUNT:
         print("Запуск: python src/main.py <конфигурация.toml>", file=sys.stderr)
         return 2
     try:

@@ -7,14 +7,18 @@ from urllib.parse import urlsplit
 FIELDS = ("package", "repository", "test_mode", "ascii_tree")
 
 
-def validate_values(config):
-    for field in FIELDS:
-        if field not in config:
-            raise ValueError(f"отсутствует параметр {field}")
+def validate_strings(config):
     for field in ("package", "repository"):
         value = config[field]
         if not isinstance(value, str) or not value or value != value.strip():
             raise ValueError(f"{field}: требуется непустая строка")
+
+
+def validate_values(config):
+    for field in FIELDS:
+        if field not in config:
+            raise ValueError(f"отсутствует параметр {field}")
+    validate_strings(config)
     for field in ("test_mode", "ascii_tree"):
         if not isinstance(config[field], bool):
             raise ValueError(f"{field}: требуется true или false")
